@@ -20,7 +20,7 @@ _mvn_cmd_opts() {
 
   if [ "$scope" = "compile" ]; then
     echo -n "${MAVEN_CUSTOM_OPTS:-"-DskipTests"}"
-    echo -n " ${MAVEN_CUSTOM_GOALS:-"clean dependency:list install"}"
+    echo -n " ${MAVEN_CUSTOM_GOALS:-"package"}"
   elif [ "$scope" = "test-compile" ]; then
     echo -n "${MAVEN_CUSTOM_GOALS:-"clean dependency:resolve-plugins test-compile"}"
   else
@@ -74,6 +74,7 @@ run_mvn() {
   cd $home
   local mvnOpts="$(_mvn_cmd_opts ${scope})"
   status "Executing: ${mavenExe} ${mvnOpts}"
+  status "${mavenExe} -DoutputFile=target/mvn-dependency-list.log -B ${mvn_settings_opt} ${mvnOpts} | indent"
   ${mavenExe} -DoutputFile=target/mvn-dependency-list.log -B ${mvn_settings_opt} ${mvnOpts} | indent
 
   if [ "${PIPESTATUS[*]}" != "0 0" ]; then
